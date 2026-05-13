@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>인터넷활용 실습 템플릿</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header>
+    <h1>이름: (여기에 추가)</h1>
+    <p class="subtitle">한 줄 소개: (여기에 추가)</p>
+  </header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="portfolio.html">Portfolio</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <main class="container">
+    <section class="dday-wrapper">
+        <style>
+          .dday-wrapper {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 40px 20px;
+            max-width: 450px;
+            margin: 40px auto;
+            text-align: center;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+          }
+  
+          .dday-wrapper h2 {
+            color: #2d3436;
+            font-size: 1.8rem;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 700;
+          }
+  
+          .input-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+          }
+  
+          .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+  
+          .input-group label {
+            font-size: 0.85rem;
+            color: #636e72;
+            margin-bottom: 8px;
+          }
+  
+          .input-group input {
+            width: 100px;
+            padding: 12px 10px;
+            border: 1px solid #dfe6e9;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #2d3436;
+            transition: border-color 0.3s, box-shadow 0.3s;
+          }
+  
+          .input-group input:focus {
+            outline: none;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 3px rgba(116, 185, 255, 0.2);
+          }
+  
+          .calc-button {
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            width: 100%;
+            max-width: 250px;
+          }
+  
+          .calc-button:hover {
+            background-color: #006cc1;
+          }
+  
+          .calc-button:active {
+            transform: scale(0.98);
+          }
+  
+          .result-container {
+            margin-top: 30px;
+            padding: 25px 20px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            display: none; /* 계산 전에는 숨김 */
+          }
+  
+          .result-container.active {
+            display: block;
+            animation: slideUp 0.4s ease-out forwards;
+          }
+  
+          .target-date-text {
+            font-size: 0.95rem;
+            color: #636e72;
+            margin-bottom: 10px;
+            margin-top: 0;
+          }
+  
+          .dday-result {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: 1px;
+          }
+  
+          /* D-day 상태에 따른 색상 */
+          .color-future { color: #0984e3; }
+          .color-today { color: #d63031; }
+          .color-past { color: #b2bec3; }
+  
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        </style>
+  
+        <h2>🗓️ D-Day 계산기</h2>
+  
+        <div class="input-container">
+          <div class="input-group">
+            <label for="yearInput">연도</label>
+            <input type="number" id="yearInput" placeholder="YYYY" value="2026">
+          </div>
+          <div class="input-group">
+            <label for="monthInput">월</label>
+            <input type="number" id="monthInput" placeholder="MM" value="12" min="1" max="12">
+          </div>
+          <div class="input-group">
+            <label for="dayInput">일</label>
+            <input type="number" id="dayInput" placeholder="DD" value="25" min="1" max="31">
+          </div>
+        </div>
+  
+        <button class="calc-button" onclick="calculateDDay()">계산하기</button>
+  
+        <div class="result-container" id="resultContainer">
+          <p class="target-date-text" id="targetDateDisplay"></p>
+          <p class="dday-result" id="ddayResult"></p>
+        </div>
+  
+        <script>
+          function calculateDDay() {
+            // 입력값 가져오기
+            let yearStr = document.getElementById('yearInput').value;
+            let monthStr = document.getElementById('monthInput').value;
+            let dayStr = document.getElementById('dayInput').value;
+  
+            let resultContainer = document.getElementById('resultContainer');
+            let targetDateDisplay = document.getElementById('targetDateDisplay');
+            let ddayResult = document.getElementById('ddayResult');
+  
+            // 빈 값 체크
+            if (!yearStr || !monthStr || !dayStr) {
+              alert("연도, 월, 일을 모두 입력해주세요!");
+              return;
+            }
+  
+            // 시간 단위를 무시하고 '일' 단위로만 정확히 계산하기 위해 시간 초기화
+            let now = new Date();
+            now.setHours(0, 0, 0, 0);
+  
+            let targetDate = new Date(yearStr, monthStr - 1, dayStr);
+            targetDate.setHours(0, 0, 0, 0);
+  
+            // 날짜 차이 계산 (밀리초 기준)
+            let diffMs = targetDate.getTime() - now.getTime();
+            let diffDay = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  
+            // 목표 날짜 출력 텍스트 설정
+            targetDateDisplay.innerText = `목표 날짜: ${targetDate.getFullYear()}년 ${targetDate.getMonth() + 1}월 ${targetDate.getDate()}일`;
+  
+            // 기존 색상 클래스 초기화
+            ddayResult.className = "dday-result";
+  
+            // D-day 결과에 따른 텍스트 및 디자인 변경
+            if (diffDay === 0) {
+              ddayResult.innerText = "D-Day 🎉";
+              ddayResult.classList.add("color-today");
+            } else if (diffDay > 0) {
+              ddayResult.innerText = "D - " + diffDay;
+              ddayResult.classList.add("color-future");
+            } else {
+              ddayResult.innerText = "D + " + Math.abs(diffDay);
+              ddayResult.classList.add("color-past");
+            }
+  
+            // 결과 컨테이너 애니메이션과 함께 표시
+            resultContainer.classList.add('active');
+          }
+        </script>
+      </section>
+  </main>
+  <footer>
+    <small>&copy; <span id="year"></span> 이름: (여기에 추가)</small>
+  </footer>
+  <script src="script.js"></script>
+</body>
+
+</html>
